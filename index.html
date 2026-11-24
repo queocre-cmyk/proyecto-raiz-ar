@@ -30,19 +30,15 @@
                 ? objeto.material
                 : [objeto.material];
 
-              materiales.forEach((material) => {
-                material.wireframe = true;
-                if (material.color) {
-                  material.color.copy(azulClaro);
-                }
-                if (material.emissive) {
-                  material.emissive.copy(brilloSuave);
-                  material.emissiveIntensity = 0.35;
-                }
-                material.needsUpdate = true;
-              });
-            }
-          });
+             objeto.material = Array.isArray(objeto.material)
+  ? objeto.material.map(() => new THREE.MeshBasicMaterial({
+      color: '#D5F2FF',
+      wireframe: true
+    }))
+  : new THREE.MeshBasicMaterial({
+      color: '#D5F2FF',
+      wireframe: true
+    });
 
           console.log('Malla poligonal azulada activada');
         });
