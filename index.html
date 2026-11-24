@@ -2,8 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Raíz - Realidad Aumentada</title>
 
@@ -13,7 +12,7 @@
   <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Visualización de malla poligonal con tono azulado claro -->
+  <!-- Malla poligonal: conserva los materiales originales y modifica su color -->
   <script>
     AFRAME.registerComponent('wireframe-original', {
       init: function () {
@@ -22,7 +21,7 @@
           if (!modelo) return;
 
           const azulClaro = new THREE.Color('#D5F2FF');
-          const brilloSuave = new THREE.Color('#3b6e8c');
+          const brilloSuave = new THREE.Color('#A6DFFF');
 
           modelo.traverse((objeto) => {
             if (objeto.isMesh && objeto.material) {
@@ -30,17 +29,27 @@
                 ? objeto.material
                 : [objeto.material];
 
-             objeto.material = Array.isArray(objeto.material)
-  ? objeto.material.map(() => new THREE.MeshBasicMaterial({
-      color: '#D5F2FF',
-      wireframe: true
-    }))
-  : new THREE.MeshBasicMaterial({
-      color: '#D5F2FF',
-      wireframe: true
-    });
+              materiales.forEach((material) => {
+                // Mantiene el material original y activa la malla poligonal
+                material.wireframe = true;
 
-          console.log('Malla poligonal azulada activada');
+                // Aplica el azul celeste claro
+                if (material.color) {
+                  material.color.copy(azulClaro);
+                }
+
+                // Añade una luminosidad suave cuando el material lo admite
+                if (material.emissive) {
+                  material.emissive.copy(brilloSuave);
+                  material.emissiveIntensity = 0.35;
+                }
+
+                material.needsUpdate = true;
+              });
+            }
+          });
+
+          console.log('Malla poligonal azul celeste activada');
         });
       }
     });
@@ -48,59 +57,55 @@
 </head>
 
 <body>
+  <a-scene
+    mindar-image="imageTargetSrc: ./assets/obra.mind; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;"
+    color-space="sRGB"
+    renderer="colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
 
-<a-scene
-  mindar-image="imageTargetSrc: ./assets/obra.mind; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;"
-  color-space="sRGB"
-  renderer="colorManagement: true"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false">
+    <!-- MODELO 3D -->
+    <a-assets>
+      <a-asset-item
+        id="raiz"
+        src="./assets/Raiz.glb">
+      </a-asset-item>
+    </a-assets>
 
-  <!-- MODELO 3D -->
-  <a-assets>
-    <a-asset-item
-      id="raiz"
-      src="./assets/Raiz.glb">
-    </a-asset-item>
-  </a-assets>
+    <!-- CÁMARA -->
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
 
-  <!-- CÁMARA -->
-  <a-camera
-    position="0 0 0"
-    look-controls="enabled: false">
-  </a-camera>
+    <!-- RECONOCIMIENTO DE LA OBRA -->
+    <a-entity mindar-image-target="targetIndex: 0">
 
-  <!-- RECONOCIMIENTO DE LA OBRA -->
-  <a-entity mindar-image-target="targetIndex: 0">
-
-    <!-- EJE CENTRAL DE ROTACIÓN (ligeramente arriba y a la izquierda) -->
-    <a-entity
-      id="eje-raiz"
-      position="-0.12 0.12 0.55"
-      rotation="0 0 0"
-      animation="
-        property: rotation;
-        from: 0 0 0;
-        to: 0 360 0;
-        loop: true;
-        dur: 50000;
-        easing: linear">
-
-      <!-- RAÍZ EN MALLA POLIGONAL -->
-      <a-gltf-model
-        id="modelo-raiz"
-        src="#raiz"
-        wireframe-original
-        position="0 0 0"
+      <!-- EJE CENTRAL: posición actual comunicada en el HTML recibido -->
+      <a-entity
+        id="eje-raiz"
+        position="-0.12 0.12 0.55"
         rotation="0 0 0"
-        scale="0.75 0.75 0.75">
-      </a-gltf-model>
+        animation="
+          property: rotation;
+          from: 0 0 0;
+          to: 0 360 0;
+          loop: true;
+          dur: 50000;
+          easing: linear">
 
+        <!-- RAÍZ EN MALLA POLIGONAL -->
+        <a-gltf-model
+          id="modelo-raiz"
+          src="#raiz"
+          wireframe-original
+          position="0 0 0"
+          rotation="0 0 0"
+          scale="0.75 0.75 0.75">
+        </a-gltf-model>
+
+      </a-entity>
     </a-entity>
-
-  </a-entity>
-
-</a-scene>
-
+  </a-scene>
 </body>
 </html>
