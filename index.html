@@ -35,6 +35,12 @@
 
               materiales.forEach((material) => {
                 material.wireframe = true;
+
+                // Color azul claro para las líneas de la malla
+                if (material.color) {
+                  material.color.set('#9CCFE8');
+                }
+
                 material.needsUpdate = true;
               });
 
@@ -83,7 +89,7 @@
     <!-- EJE CENTRAL DE ROTACIÓN -->
     <a-entity
       id="eje-raiz"
-      position="0 0 0.55"
+      position="-0.03 0.03 0.55"
       rotation="0 0 0"
       animation="
         property: rotation;
