@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Raíz - Realidad Aumentada</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Visualización de malla poligonal -->
+  <script>
+    AFRAME.registerComponent('wireframe-original', {
+      init: function () {
+
+        this.el.addEventListener('model-loaded', () => {
+
+          const modelo = this.el.getObject3D('mesh');
+
+          if (!modelo) return;
+
+          modelo.traverse((objeto) => {
+
+            if (objeto.isMesh && objeto.material) {
+
+              const materiales = Array.isArray(objeto.material)
+                ? objeto.material
+                : [objeto.material];
+
+              materiales.forEach((material) => {
+                material.wireframe = true;
+                material.needsUpdate = true;
+              });
+
+            }
+
+          });
+
+          console.log('Malla poligonal activada');
+
+        });
+
+      }
+    });
+  </script>
+
+</head>
+
+<body>
+
+<a-scene
+  mindar-image="imageTargetSrc: ./assets/obra.mind; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+
+  <!-- MODELO 3D -->
+  <a-assets>
+
+    <a-asset-item
+      id="raiz"
+      src="./assets/Raiz.glb">
+    </a-asset-item>
+
+  </a-assets>
+
+  <!-- CÁMARA -->
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
+  </a-camera>
+
+  <!-- RECONOCIMIENTO DE LA OBRA -->
+  <a-entity mindar-image-target="targetIndex: 0">
+
+    <!-- EJE CENTRAL DE ROTACIÓN -->
+    <a-entity
+      id="eje-raiz"
+      position="0 0 0.55"
+      rotation="0 0 0"
+      animation="
+        property: rotation;
+        from: 0 0 0;
+        to: 0 360 0;
+        loop: true;
+        dur: 50000;
+        easing: linear">
+
+      <!-- RAÍZ EN MALLA POLIGONAL -->
+      <a-gltf-model
+        id="modelo-raiz"
+        src="#raiz"
+        wireframe-original
+        position="0 0 0"
+        rotation="0 0 0"
+        scale="0.75 0.75 0.75">
+      </a-gltf-model>
+
+    </a-entity>
+
+  </a-entity>
+
+</a-scene>
+
+</body>
+</html>
