@@ -41,7 +41,7 @@
                 // Añade una luminosidad suave cuando el material lo admite
                 if (material.emissive) {
                   material.emissive.copy(brilloSuave);
-                  material.emissiveIntensity = 0.35;
+                  material.emissiveIntensity = 0.10;
                 }
 
                 material.needsUpdate = true;
@@ -91,7 +91,7 @@
           from: 0 0 0;
           to: 0 360 0;
           loop: true;
-          dur: 50000;
+          dur: 40000;
           easing: linear">
 
         <!-- RAÍZ EN MALLA POLIGONAL -->
