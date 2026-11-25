@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,51 +13,64 @@
   <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Malla poligonal: conserva los materiales originales y modifica su color -->
+  <!-- Malla poligonal amarilla -->
   <script>
     AFRAME.registerComponent('wireframe-original', {
       init: function () {
+
         this.el.addEventListener('model-loaded', () => {
+
           const modelo = this.el.getObject3D('mesh');
           if (!modelo) return;
 
-    const colorRaiz = new THREE.Color('#FFD400');
-const brilloSuave = new THREE.Color('#FFD400');
+          // Amarillo intenso elegido
+          const colorRaiz = '#FFD400';
 
           modelo.traverse((objeto) => {
+
             if (objeto.isMesh && objeto.material) {
-              const materiales = Array.isArray(objeto.material)
+
+              const materialesOriginales = Array.isArray(objeto.material)
                 ? objeto.material
                 : [objeto.material];
 
-              materiales.forEach((material) => {
-                // Mantiene el material original y activa la malla poligonal
-                material.wireframe = true;
+              // Crear materiales amarillos sin textura
+              const materialesMalla = materialesOriginales.map(() => {
 
-                // Aplica el azul celeste claro
-                if (material.color) {
-                  material.color.copy(azulClaro);
-                }
+                return new THREE.MeshBasicMaterial({
 
-                // Añade una luminosidad suave cuando el material lo admite
-                if (material.emissive) {
-                  material.emissive.copy(brilloSuave);
-                  material.emissiveIntensity = 0.15;
-                }
+                  color: colorRaiz,
+                  wireframe: true,
+                  side: THREE.DoubleSide,
+                  transparent: false,
+                  opacity: 1,
+                  toneMapped: false
 
-                material.needsUpdate = true;
+                });
+
               });
+
+              // Aplicar los nuevos materiales
+              objeto.material = Array.isArray(objeto.material)
+                ? materialesMalla
+                : materialesMalla[0];
+
             }
+
           });
 
-          console.log('Malla poligonal azul celeste activada');
+          console.log('Malla poligonal amarilla activada');
+
         });
+
       }
     });
   </script>
+
 </head>
 
 <body>
+
   <a-scene
     mindar-image="imageTargetSrc: ./assets/obra.mind; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;"
     color-space="sRGB"
@@ -81,7 +95,7 @@ const brilloSuave = new THREE.Color('#FFD400');
     <!-- RECONOCIMIENTO DE LA OBRA -->
     <a-entity mindar-image-target="targetIndex: 0">
 
-      <!-- EJE CENTRAL: posición actual comunicada en el HTML recibido -->
+      <!-- EJE CENTRAL DE ROTACIÓN -->
       <a-entity
         id="eje-raiz"
         position="-0.12 0.12 0.55"
@@ -94,7 +108,7 @@ const brilloSuave = new THREE.Color('#FFD400');
           dur: 40000;
           easing: linear">
 
-        <!-- RAÍZ EN MALLA POLIGONAL -->
+        <!-- RAÍZ EN MALLA POLIGONAL AMARILLA -->
         <a-gltf-model
           id="modelo-raiz"
           src="#raiz"
@@ -105,7 +119,10 @@ const brilloSuave = new THREE.Color('#FFD400');
         </a-gltf-model>
 
       </a-entity>
+
     </a-entity>
+
   </a-scene>
+
 </body>
 </html>
