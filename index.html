@@ -86,10 +86,21 @@
       </a-asset-item>
     </a-assets>
 
-    <!-- CÁMARA -->
-    <a-camera
-      position="0 0 0"
-      look-controls="enabled: false">
+  <!-- ILUMINACIÓN AMBIENTAL -->
+  <a-entity
+    light="type: ambient; color: #ffffff; intensity: 0.55">
+  </a-entity>
+
+  <!-- LUZ PRINCIPAL DESDE ARRIBA -->
+  <a-entity
+    light="type: directional; color: #ffffff; intensity: 1.2"
+    position="0 3 0">
+  </a-entity>
+
+  <!-- CÁMARA -->
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
     </a-camera>
 
     <!-- RECONOCIMIENTO DE LA OBRA -->
