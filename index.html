@@ -3,7 +3,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
   <title>Raíz - Realidad Aumentada</title>
 
@@ -13,127 +14,101 @@
   <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Malla poligonal amarilla -->
+  <!-- Malla poligonal con color ocre y brillo -->
   <script>
     AFRAME.registerComponent('wireframe-original', {
       init: function () {
-
         this.el.addEventListener('model-loaded', () => {
-
           const modelo = this.el.getObject3D('mesh');
           if (!modelo) return;
 
-          // Amarillo intenso elegido
-          const colorRaiz = '#B5A643';
+          const colorRaiz = new THREE.Color('#B5A643');
+          const brilloRaiz = new THREE.Color('#625A28');
 
           modelo.traverse((objeto) => {
-
             if (objeto.isMesh && objeto.material) {
-
-              const materialesOriginales = Array.isArray(objeto.material)
+              const materiales = Array.isArray(objeto.material)
                 ? objeto.material
                 : [objeto.material];
 
-              // Crear materiales amarillos sin textura
-              const materialesMalla = materialesOriginales.map(() => {
+              materiales.forEach((material) => {
+                material.wireframe = true;
 
-                return new THREE.MeshBasicMaterial({
+                if (material.color) {
+                  material.color.copy(colorRaiz);
+                }
 
-                  color: colorRaiz,
-                  wireframe: true,
-                  side: THREE.DoubleSide,
-                  transparent: false,
-                  opacity: 1,
-                  toneMapped: false
+                if (material.emissive) {
+                  material.emissive.copy(brilloRaiz);
+                  material.emissiveIntensity = 0.35;
+                }
 
-                });
-
+                material.needsUpdate = true;
               });
-
-              // Aplicar los nuevos materiales
-              objeto.material = Array.isArray(objeto.material)
-                ? materialesMalla
-                : materialesMalla[0];
-
             }
-
           });
 
-          console.log('Malla poligonal amarilla activada');
-
+          console.log('Malla poligonal ocre activada');
         });
-
       }
     });
   </script>
-
 </head>
 
 <body>
 
-  <a-scene
-    mindar-image="imageTargetSrc: ./assets/obra.mind; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;"
-    color-space="sRGB"
-    renderer="colorManagement: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+<a-scene
+  mindar-image="imageTargetSrc: ./assets/obra.mind; autoStart: true; filterMinCF: 0.0001; filterBeta: 0.001;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
 
-    <!-- MODELO 3D -->
-    <a-assets>
-      <a-asset-item
-        id="raiz"
-        src="./assets/Raiz.glb">
-      </a-asset-item>
-    </a-assets>
-
-  <!-- ILUMINACIÓN AMBIENTAL -->
-  <a-entity
-    light="type: ambient; color: #ffffff; intensity: 0.15">
-  </a-entity>
-
-  <!-- LUZ PRINCIPAL DESDE ARRIBA -->
-  <a-entity
-    light="type: directional; color: #ffffff; intensity: 0.35"
-    position="0 3 0">
-  </a-entity>
+  <!-- MODELO 3D -->
+  <a-assets>
+    <a-asset-item
+      id="raiz"
+      src="./assets/Raiz.glb">
+    </a-asset-item>
+  </a-assets>
 
   <!-- CÁMARA -->
   <a-camera
     position="0 0 0"
     look-controls="enabled: false">
-    </a-camera>
+  </a-camera>
 
-    <!-- RECONOCIMIENTO DE LA OBRA -->
-    <a-entity mindar-image-target="targetIndex: 0">
+  <!-- RECONOCIMIENTO DE LA OBRA -->
+  <a-entity mindar-image-target="targetIndex: 0">
 
-      <!-- EJE CENTRAL DE ROTACIÓN -->
-      <a-entity
-        id="eje-raiz"
-        position="-0.12 0.12 0.55"
+    <!-- EJE CENTRAL DE ROTACIÓN -->
+    <a-entity
+      id="eje-raiz"
+      position="-0.12 0.12 0.55"
+      rotation="0 0 0"
+      animation="
+        property: rotation;
+        from: 0 0 0;
+        to: 0 360 0;
+        loop: true;
+        dur: 50000;
+        easing: linear">
+
+      <!-- RAÍZ EN MALLA POLIGONAL -->
+      <a-gltf-model
+        id="modelo-raiz"
+        src="#raiz"
+        wireframe-original
+        position="0 0 0"
         rotation="0 0 0"
-        animation="
-          property: rotation;
-          from: 0 0 0;
-          to: 0 360 0;
-          loop: true;
-          dur: 40000;
-          easing: linear">
-
-        <!-- RAÍZ EN MALLA POLIGONAL AMARILLA -->
-        <a-gltf-model
-          id="modelo-raiz"
-          src="#raiz"
-          wireframe-original
-          position="0 0 0"
-          rotation="0 0 0"
-          scale="0.75 0.75 0.75">
-        </a-gltf-model>
-
-      </a-entity>
+        scale="0.75 0.75 0.75">
+      </a-gltf-model>
 
     </a-entity>
 
-  </a-scene>
+  </a-entity>
+
+</a-scene>
 
 </body>
 </html>
