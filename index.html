@@ -20,8 +20,8 @@
           const modelo = this.el.getObject3D('mesh');
           if (!modelo) return;
 
-          const azulClaro = new THREE.Color('#E6B800');
-          const brilloSuave = new THREE.Color('#E6B800');
+    const colorRaiz = new THREE.Color('#FFD400');
+const brilloSuave = new THREE.Color('#FFD400');
 
           modelo.traverse((objeto) => {
             if (objeto.isMesh && objeto.material) {
